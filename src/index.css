@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-neon: #39FF14;
+  }
+}
+
+body {
+  @apply bg-black;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neon bg-opacity-50 rounded-full;
+}
+
+/* Custom classes */
+.text-shadow-neon {
+  text-shadow: 0 0 5px var(--color-neon);
+}
+
+.bg-gradient-dark {
+  background: linear-gradient(to bottom, #000000, #111111);
+}
+
+.bg-grid {
+  background-image: 
+    linear-gradient(rgba(57, 255, 20, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 20, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.video-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.video-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.8));
+  pointer-events: none;
+}
