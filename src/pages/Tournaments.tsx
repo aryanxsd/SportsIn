@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Trophy, Calendar, Users2, MapPin, Search, Filter, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { mockTournaments } from '../lib/mockData';
 
 function Tournaments() {
   const { user } = useAuth();
@@ -9,134 +10,7 @@ function Tournaments() {
   const [filterVenue, setFilterVenue] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
 
-  // Sport-specific tournaments
-  const sportTournaments = {
-    Cricket: [
-      {
-        id: 1,
-        name: 'Spring Championship 2025',
-        format: 'T20',
-        teams: 8,
-        startDate: 'April 1, 2025',
-        venue: 'Central Stadium',
-        status: 'upcoming',
-        description: 'The premier T20 cricket tournament featuring top teams from across the region',
-        prize: '$5,000',
-        registrationOpen: true,
-        image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=600&h=300&fit=crop&auto=format'
-      },
-      {
-        id: 2,
-        name: 'City League',
-        format: 'ODI',
-        teams: 6,
-        startDate: 'March 15, 2025',
-        venue: 'Sports Complex',
-        status: 'ongoing',
-        description: 'Local cricket league with intense rivalries and high-quality cricket',
-        prize: '$3,000',
-        registrationOpen: false,
-        image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=600&h=300&fit=crop&auto=format'
-      },
-      {
-        id: 3,
-        name: 'National Cricket Cup',
-        format: 'Test',
-        teams: 4,
-        startDate: 'May 10, 2025',
-        venue: 'National Stadium',
-        status: 'upcoming',
-        description: 'The most prestigious long-format cricket tournament in the country',
-        prize: '$10,000',
-        registrationOpen: true,
-        image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=600&h=300&fit=crop&auto=format'
-      }
-    ],
-    Football: [
-      {
-        id: 1,
-        name: 'Premier League 2025',
-        format: 'League',
-        teams: 10,
-        startDate: 'March 20, 2025',
-        venue: 'City Stadium',
-        status: 'upcoming',
-        description: 'The top-tier football league with the best teams competing for glory',
-        prize: '$8,000',
-        registrationOpen: true,
-        image: 'https://images.unsplash.com/photo-1508098682722-e99c643e7f0b?w=600&h=300&fit=crop&auto=format'
-      },
-      {
-        id: 2,
-        name: 'Champions Cup',
-        format: 'Knockout',
-        teams: 16,
-        startDate: 'April 5, 2025',
-        venue: 'National Arena',
-        status: 'upcoming',
-        description: 'Exciting knockout tournament with teams from multiple regions',
-        prize: '$5,000',
-        registrationOpen: true,
-        image: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&h=300&fit=crop&auto=format'
-      },
-      {
-        id: 3,
-        name: 'Regional Football Series',
-        format: 'Group + Knockout',
-        teams: 12,
-        startDate: 'March 1, 2025',
-        venue: 'Sports Village',
-        status: 'ongoing',
-        description: 'Regional tournament featuring group stages followed by knockout rounds',
-        prize: '$3,500',
-        registrationOpen: false,
-        image: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=600&h=300&fit=crop&auto=format'
-      }
-    ],
-    Basketball: [
-      {
-        id: 1,
-        name: 'City Basketball Championship',
-        format: '5v5',
-        teams: 12,
-        startDate: 'March 25, 2025',
-        venue: 'Indoor Arena',
-        status: 'upcoming',
-        description: 'The biggest basketball tournament in the city with elite competition',
-        prize: '$6,000',
-        registrationOpen: true,
-        image: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=600&h=300&fit=crop&auto=format'
-      },
-      {
-        id: 2,
-        name: 'Street Basketball League',
-        format: '3v3',
-        teams: 24,
-        startDate: 'April 10, 2025',
-        venue: 'Downtown Courts',
-        status: 'upcoming',
-        description: 'Fast-paced 3v3 basketball tournament with street-style rules',
-        prize: '$2,500',
-        registrationOpen: true,
-        image: 'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=600&h=300&fit=crop&auto=format'
-      },
-      {
-        id: 3,
-        name: 'Pro Basketball Invitational',
-        format: '5v5',
-        teams: 8,
-        startDate: 'March 5, 2025',
-        venue: 'Sports Center',
-        status: 'ongoing',
-        description: 'Invitation-only tournament featuring the best basketball teams',
-        prize: '$10,000',
-        registrationOpen: false,
-        image: 'https://images.unsplash.com/photo-1518085250887-2f903c200a89?w=600&h=300&fit=crop&auto=format'
-      }
-    ]
-  };
-
-  const tournaments = user?.sport ? sportTournaments[user.sport] : [];
+  const tournaments = user?.sport ? mockTournaments[user.sport] : [];
 
   // Filter tournaments based on search and filters
   const filteredTournaments = tournaments.filter(tournament => {
@@ -288,11 +162,17 @@ function Tournaments() {
                 </div>
 
                 <div className="mt-6 flex justify-between items-center">
-                  <button className="text-neon hover:text-white transition-colors flex items-center">
+                  <button 
+                    onClick={() => alert('Tournament details feature coming soon!')}
+                    className="text-neon hover:text-white transition-colors flex items-center"
+                  >
                     View Details <Trophy className="h-4 w-4 ml-1" />
                   </button>
                   {tournament.registrationOpen && (
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-black bg-neon hover:bg-opacity-90 transition-colors">
+                    <button 
+                      onClick={() => alert('Registration feature coming soon!')}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-black bg-neon hover:bg-opacity-90 transition-colors"
+                    >
                       Register Now
                     </button>
                   )}

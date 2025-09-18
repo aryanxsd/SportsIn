@@ -6,9 +6,7 @@ function Chat() {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
-
-  // Mock messages for demonstration
-  const [messages] = useState([
+  const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'them',
@@ -24,7 +22,7 @@ function Chat() {
     {
       id: 3,
       sender: 'them',
-      content: 'Of course! Ive been coaching cricket for over 10 years. What specific aspects are you interested in?',
+      content: 'Of course! I\'ve been coaching cricket for over 10 years. What specific aspects are you interested in?',
       time: '10:32 AM'
     }
   ]);
@@ -32,9 +30,25 @@ function Chat() {
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
-      // Here you would typically send the message to your backend
-      console.log('Sending message:', message);
+      const newMessage = {
+        id: messages.length + 1,
+        sender: 'me' as const,
+        content: message,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages([...messages, newMessage]);
       setMessage('');
+      
+      // Simulate response after 2 seconds
+      setTimeout(() => {
+        const response = {
+          id: messages.length + 2,
+          sender: 'them' as const,
+          content: 'Thanks for your message! I\'ll get back to you soon.',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, response]);
+      }, 2000);
     }
   };
 
@@ -52,7 +66,7 @@ function Chat() {
           <img
             src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&auto=format"
             alt="Profile"
-            className="h-10 w-10 rounded-full object-cover"
+            className="h-10 w-10 rounded-full object-cover border border-neon"
           />
           <div className="ml-3">
             <h3 className="text-white font-medium">John Doe</h3>

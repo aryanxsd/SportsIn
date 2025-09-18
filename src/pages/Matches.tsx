@@ -1,47 +1,8 @@
 import React from 'react';
 import { Calendar, MapPin, Clock, Trophy, Plus } from 'lucide-react';
+import { mockMatches } from '../lib/mockData';
 
 function Matches() {
-  const matches = [
-    {
-      id: 1,
-      team1: {
-        name: 'Thunder Kings',
-        score: '186/4',
-        logo: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=100&h=100&q=80',
-      },
-      team2: {
-        name: 'Royal Challengers',
-        score: '184/7',
-        logo: 'https://images.unsplash.com/photo-1584714268709-c3dd9c92b378?auto=format&fit=crop&w=100&h=100&q=80',
-      },
-      date: 'March 15, 2025',
-      time: '14:30',
-      venue: 'Central Stadium',
-      format: 'T20',
-      status: 'completed',
-      result: 'Thunder Kings won by 2 runs',
-    },
-    {
-      id: 2,
-      team1: {
-        name: 'Phoenix Warriors',
-        score: '-',
-        logo: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=100&h=100&q=80',
-      },
-      team2: {
-        name: 'Thunder Kings',
-        score: '-',
-        logo: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=100&h=100&q=80',
-      },
-      date: 'March 20, 2025',
-      time: '15:00',
-      venue: 'Sports Complex',
-      format: 'ODI',
-      status: 'upcoming',
-    },
-  ];
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="md:flex md:items-center md:justify-between">
@@ -53,6 +14,7 @@ function Matches() {
         <div className="mt-4 flex md:mt-0 md:ml-4">
           <button
             type="button"
+            onClick={() => alert('Schedule match feature coming soon!')}
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-black bg-neon hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-neon"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -62,7 +24,7 @@ function Matches() {
       </div>
 
       <div className="mt-8 space-y-6">
-        {matches.map((match) => (
+        {mockMatches.map((match) => (
           <div
             key={match.id}
             className="bg-gray-800 overflow-hidden rounded-lg shadow-lg hover:ring-2 hover:ring-neon transition-all"
@@ -132,7 +94,10 @@ function Matches() {
                   <p className="text-green-400 font-medium">{match.result}</p>
                 )}
                 {match.status === 'upcoming' && (
-                  <button className="text-neon hover:text-white transition-colors">
+                  <button 
+                    onClick={() => alert('Match details feature coming soon!')}
+                    className="text-neon hover:text-white transition-colors"
+                  >
                     View Details →
                   </button>
                 )}

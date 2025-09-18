@@ -10,17 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.7",
-    "@supabase/auth-ui-react": "^0.4.7",
-    "@supabase/auth-ui-shared": "^0.1.8",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.3.1",
+    "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.22.2",
     "react-hook-form": "^7.50.1",
-    "lucide-react": "^0.344.0",
-    "zustand": "^4.5.1",
-    "date-fns": "^3.3.1",
-    "clsx": "^2.1.0"
+    "react-router-dom": "^6.22.2",
+    "zustand": "^4.5.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",

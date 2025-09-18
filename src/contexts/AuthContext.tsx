@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
-import type { Sport, UserType, UserProfile } from '../types';
+import type { Sport, UserType } from '../types';
+import { mockUsers, defaultUser, STORAGE_KEYS, type MockUser } from '../lib/mockData';
 
 interface AuthContextType {
-  user: UserProfile | null;
+  user: MockUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (data: {
@@ -14,85 +14,46 @@ interface AuthContextType {
     userType: UserType;
   }) => Promise<{ needsVerification: boolean }>;
   signOut: () => Promise<void>;
-  updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
+  updateProfile: (updates: Partial<MockUser>) => Promise<void>;
   resendVerification: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<MockUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      } else {
-        setLoading(false);
+    // Load user from localStorage or use default
+    const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch {
+        setUser(defaultUser);
+        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(defaultUser));
       }
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        await fetchUserProfile(session.user.id);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setLoading(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    } else {
+      setUser(defaultUser);
+      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(defaultUser));
+    }
+    setLoading(false);
   }, []);
 
-  async function fetchUserProfile(userId: string) {
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-
-      if (error) throw error;
-      if (data) {
-        setUser(data);
-      } else {
-        console.warn('No user profile found');
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function signIn(email: string, password: string) {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      
-      // Check if user is null even when no explicit error is returned
-      if (!data.user) {
-        throw new Error('Invalid login credentials');
-      }
-      
-      if (data.user && !data.user.email_confirmed_at) {
-        throw new Error('Please verify your email before signing in');
-      }
-      if (data.user) {
-        await fetchUserProfile(data.user.id);
-      }
-    } catch (error) {
-      console.error('Sign in error:', error);
-      throw error;
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Find user by email (mock authentication)
+    const foundUser = Object.values(mockUsers).find(u => u.email === email);
+    
+    if (!foundUser) {
+      throw new Error('Invalid email or password');
     }
+    
+    setUser(foundUser);
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(foundUser));
   }
 
   async function signUp(data: {
@@ -101,120 +62,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     username: string;
     sport: Sport;
     userType: UserType;
-  }): Promise<{ needsVerification: boolean; userExists?: boolean }> {
-    try {
-      // Create auth user with email confirmation required
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/home`,
-          data: {
-            username: data.username,
-            sport: data.sport,
-            user_type: data.userType,
-          }
-        }
-      });
-
-      if (authError) {
-        // Handle user already exists case without throwing error
-        if (authError.message?.includes('User already registered') || authError.message?.includes('already registered')) {
-          return { needsVerification: true, userExists: true };
-        }
-        throw authError;
-      }
-
-      // If user needs email verification, return early
-      if (authData.user && !authData.user.email_confirmed_at) {
-        return { needsVerification: true };
-      }
-
-      // If user is already confirmed (shouldn't happen in normal flow)
-      if (authData.user && authData.user.email_confirmed_at) {
-        await createUserProfile(authData.user.id, data);
-        await fetchUserProfile(authData.user.id);
-        return { needsVerification: false };
-      }
-
-      return { needsVerification: true };
-    } catch (error) {
-      console.error('Sign up error:', error);
-      throw error;
-    }
-  }
-
-  async function createUserProfile(userId: string, data: {
-    username: string;
-    sport: Sport;
-    userType: UserType;
-  }) {
-    // Create user profile
-    const { error: profileError } = await supabase.from('users').insert([
-      {
-        id: userId,
-        username: data.username,
-        sport: data.sport,
-        user_type: data.userType,
-        avatar_url: `https://ui-avatars.com/api/?name=${data.username}&background=39FF14&color=000000`,
-      },
-    ]);
+  }): Promise<{ needsVerification: boolean }> {
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
-    if (profileError) throw profileError;
-
-    // Create initial player stats
-    const { error: statsError } = await supabase.from('player_stats').insert([
-      {
-        user_id: userId,
-      },
-    ]);
-    if (statsError) throw statsError;
+    // Check if user already exists
+    const existingUser = Object.values(mockUsers).find(u => u.email === data.email || u.username === data.username);
+    if (existingUser) {
+      throw new Error('User already exists with this email or username');
+    }
+    
+    // Create new user
+    const newUser: MockUser = {
+      id: `user-${Date.now()}`,
+      username: data.username,
+      email: data.email,
+      full_name: data.username,
+      avatar_url: `https://ui-avatars.com/api/?name=${data.username}&background=39FF14&color=000000`,
+      sport: data.sport,
+      user_type: data.userType,
+      bio: `${data.sport} ${data.userType.toLowerCase()}`,
+      location: 'Location not set',
+      followers_count: 0,
+      following_count: 0,
+      posts_count: 0,
+      created_at: new Date().toISOString()
+    };
+    
+    // In a real app, this would be sent to backend
+    // For demo, we'll simulate email verification
+    return { needsVerification: true };
   }
 
   async function resendVerification(email: string) {
-    try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/home`
-        }
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.error('Resend verification error:', error);
-      throw error;
-    }
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    // In a real app, this would trigger email resend
+    console.log('Verification email resent to:', email);
   }
 
   async function signOut() {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      setUser(null);
-    } catch (error) {
-      console.error('Sign out error:', error);
-      throw error;
-    }
+    setUser(null);
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
   }
 
-  async function updateProfile(updates: Partial<UserProfile>) {
-    try {
-      if (!user?.id) throw new Error('No user logged in');
-
-      const { data, error } = await supabase
-        .from('users')
-        .update(updates)
-        .eq('id', user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      setUser({ ...user, ...data });
-    } catch (error) {
-      console.error('Update profile error:', error);
-      throw error;
-    }
+  async function updateProfile(updates: Partial<MockUser>) {
+    if (!user) throw new Error('No user logged in');
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const updatedUser = { ...user, ...updates };
+    setUser(updatedUser);
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(updatedUser));
   }
 
   const value = {

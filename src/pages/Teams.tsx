@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Users2, Trophy, MapPin, Search, Filter, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { mockTeams } from '../lib/mockData';
 
 function Teams() {
   const { user } = useAuth();
@@ -9,116 +10,7 @@ function Teams() {
   const [filterCity, setFilterCity] = useState('');
   const [filterWins, setFilterWins] = useState('');
 
-  // Sport-specific teams
-  const sportTeams = {
-    Cricket: [
-      {
-        id: 1,
-        name: 'Royal Strikers',
-        city: 'Mumbai',
-        members: 15,
-        wins: 12,
-        losses: 3,
-        logo: 'https://images.unsplash.com/photo-1584714268709-c3dd9c92b378?w=200&h=200&fit=crop&crop=faces&auto=format&q=60',
-        description: 'Premier cricket team with a focus on aggressive batting and disciplined bowling',
-        achievements: ['City League Champions 2024', 'State Runners-up 2023']
-      },
-      {
-        id: 2,
-        name: 'Thunder Kings',
-        city: 'Delhi',
-        members: 14,
-        wins: 10,
-        losses: 5,
-        logo: 'https://images.unsplash.com/photo-1584714268709-c3dd9c92b378?w=200&h=200&fit=crop&crop=faces&auto=format&q=60',
-        description: 'A balanced team known for their strategic gameplay and team spirit',
-        achievements: ['National T20 Semifinalists', 'Corporate Cup Winners']
-      },
-      {
-        id: 3,
-        name: 'Phoenix Warriors',
-        city: 'Bangalore',
-        members: 16,
-        wins: 14,
-        losses: 2,
-        logo: 'https://images.unsplash.com/photo-1584714268709-c3dd9c92b378?w=200&h=200&fit=crop&crop=faces&auto=format&q=60',
-        description: 'Rising stars of the cricket scene with exceptional young talent',
-        achievements: ['Youth Championship Winners', 'Regional Tournament Finalists']
-      }
-    ],
-    Football: [
-      {
-        id: 1,
-        name: 'City Warriors FC',
-        city: 'Manchester',
-        members: 18,
-        wins: 15,
-        losses: 3,
-        logo: 'https://images.unsplash.com/photo-1589487391730-58f20eb2c308?w=200&h=200&fit=crop&crop=faces&auto=format&q=60',
-        description: 'Elite football club with a strong focus on attacking play',
-        achievements: ['Premier League Champions', 'Cup Semifinalists']
-      },
-      {
-        id: 2,
-        name: 'United Rovers',
-        city: 'London',
-        members: 20,
-        wins: 12,
-        losses: 6,
-        logo: 'https://images.unsplash.com/photo-1589487391730-58f20eb2c308?w=200&h=200&fit=crop&crop=faces&auto=format&q=60',
-        description: 'Historic club known for their defensive solidity and counter-attacks',
-        achievements: ['League Cup Winners', 'European Qualifiers']
-      },
-      {
-        id: 3,
-        name: 'Athletic FC',
-        city: 'Liverpool',
-        members: 19,
-        wins: 11,
-        losses: 7,
-        logo: 'https://images.unsplash.com/photo-1589487391730-58f20eb2c308?w=200&h=200&fit=crop&crop=faces&auto=format&q=60',
-        description: 'A team with rich tradition and passionate supporters',
-        achievements: ['Community Shield Winners', 'Youth Academy Excellence Award']
-      }
-    ],
-    Basketball: [
-      {
-        id: 1,
-        name: 'City Blazers',
-        city: 'Chicago',
-        members: 12,
-        wins: 18,
-        losses: 4,
-        logo: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=200&h=200&fit=crop&crop=faces&auto=format&q=60',
-        description: 'Fast-paced team with exceptional three-point shooters',
-        achievements: ['Conference Champions', 'All-Star Weekend Winners']
-      },
-      {
-        id: 2,
-        name: 'Phoenix Knights',
-        city: 'Los Angeles',
-        members: 12,
-        wins: 16,
-        losses: 6,
-        logo: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=200&h=200&fit=crop&crop=faces&auto=format&q=60',
-        description: 'Defensive specialists with strong inside presence',
-        achievements: ['Division Champions', 'Playoff Semifinalists']
-      },
-      {
-        id: 3,
-        name: 'Slam Dunkers',
-        city: 'New York',
-        members: 13,
-        wins: 15,
-        losses: 7,
-        logo: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=200&h=200&fit=crop&crop=faces&auto=format&q=60',
-        description: 'Exciting team known for their highlight-reel plays',
-        achievements: ['State Tournament Winners', 'Most Improved Team Award']
-      }
-    ]
-  };
-
-  const allTeams = user?.sport ? sportTeams[user.sport] : [];
+  const allTeams = user?.sport ? mockTeams[user.sport] : [];
 
   // Filter teams based on search and filters
   const filteredTeams = allTeams.filter(team => {
@@ -263,7 +155,10 @@ function Teams() {
                 </div>
 
                 <div className="mt-6 flex justify-between items-center">
-                  <button className="text-neon hover:text-white transition-colors flex items-center">
+                  <button 
+                    onClick={() => alert('Team details feature coming soon!')}
+                    className="text-neon hover:text-white transition-colors flex items-center"
+                  >
                     View Team <Trophy className="h-4 w-4 ml-1" />
                   </button>
                   <div className="flex items-center">

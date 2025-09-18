@@ -1,17 +1,31 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { MessageSquare, ThumbsUp, Share2, Users, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { mockPosts, STORAGE_KEYS } from '../lib/mockData';
 
 function Home() {
   const { user } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = React.useState(false);
-  const [isMuted, setIsMuted] = React.useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.addEventListener('play', () => setIsPlaying(true));
       videoRef.current.addEventListener('pause', () => setIsPlaying(false));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Load liked posts from localStorage
+    const savedLikes = localStorage.getItem(STORAGE_KEYS.LIKED_POSTS);
+    if (savedLikes) {
+      try {
+        setLikedPosts(new Set(JSON.parse(savedLikes)));
+      } catch {
+        setLikedPosts(new Set());
+      }
     }
   }, []);
 
@@ -32,84 +46,19 @@ function Home() {
     }
   };
 
-  // Mock data for posts based on sport
-  const posts = {
-    Cricket: [
-      {
-        id: 1,
-        author: "Sarah Johnson",
-        role: "Cricket Coach",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&auto=format",
-        content: "Looking for cricket players for weekend practice sessions. All skill levels welcome! Location: Central Sports Complex",
-        image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=600&h=400&fit=crop&auto=format",
-        likes: 24,
-        comments: 8,
-        time: "2 hours ago"
-      },
-      {
-        id: 2,
-        author: "Cricket Academy Pro",
-        role: "Professional Academy",
-        avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop&auto=format",
-        content: "New batting techniques workshop this weekend. Limited spots available!",
-        video: "https://assets.mixkit.co/videos/preview/mixkit-cricket-player-hitting-the-ball-40317-large.mp4",
-        likes: 45,
-        comments: 12,
-        time: "5 hours ago"
-      }
-    ],
-    Football: [
-      {
-        id: 1,
-        author: "Mike Wilson",
-        role: "Football Coach",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format",
-        content: "Seeking players for our amateur football league. Training sessions every Tuesday and Thursday.",
-        image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&h=400&fit=crop&auto=format",
-        likes: 32,
-        comments: 15,
-        time: "3 hours ago"
-      },
-      {
-        id: 2,
-        author: "Football Academy Elite",
-        role: "Professional Academy",
-        avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop&auto=format",
-        content: "Check out our new training facilities! Open house this weekend for all interested players.",
-        video: "https://assets.mixkit.co/videos/preview/mixkit-soccer-player-dribbling-a-ball-40377-large.mp4",
-        likes: 67,
-        comments: 23,
-        time: "1 day ago"
-      }
-    ],
-    Basketball: [
-      {
-        id: 1,
-        author: "Basketball Elite",
-        role: "Professional Academy",
-        avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&h=100&fit=crop&auto=format",
-        content: "Join our summer basketball camp! Improve your skills with professional coaches.",
-        image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=400&fit=crop&auto=format",
-        likes: 56,
-        comments: 23,
-        time: "1 hour ago"
-      },
-      {
-        id: 2,
-        author: "Hoops Academy",
-        role: "Basketball Training Center",
-        avatar: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=100&h=100&fit=crop&auto=format",
-        content: "New advanced dribbling techniques workshop starting next week. Limited spots available!",
-        video: "https://assets.mixkit.co/videos/preview/mixkit-basketball-player-dribbling-then-dunking-40659-large.mp4",
-        likes: 42,
-        comments: 18,
-        time: "5 hours ago"
-      }
-    ]
+  const handleLike = (postId: string) => {
+    const newLikedPosts = new Set(likedPosts);
+    if (likedPosts.has(postId)) {
+      newLikedPosts.delete(postId);
+    } else {
+      newLikedPosts.add(postId);
+    }
+    setLikedPosts(newLikedPosts);
+    localStorage.setItem(STORAGE_KEYS.LIKED_POSTS, JSON.stringify([...newLikedPosts]));
   };
 
   const userSport = user?.sport || 'Cricket';
-  const relevantPosts = posts[userSport] || [];
+  const relevantPosts = mockPosts[userSport] || [];
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
@@ -129,6 +78,7 @@ function Home() {
           />
           <button
             className="flex-1 bg-black text-gray-300 rounded-full px-4 py-2 text-left hover:bg-gray-800 transition-colors border border-gray-800 hover:border-neon"
+            onClick={() => alert('Post creation feature coming soon!')}
           >
             Share something with the community...
           </button>
@@ -142,14 +92,14 @@ function Home() {
             {/* Post Header */}
             <div className="p-4 flex items-center space-x-3">
               <img
-                src={post.avatar}
-                alt={post.author}
+                src={post.author.avatar_url}
+                alt={post.author.username}
                 className="h-10 w-10 rounded-full border border-neon"
               />
               <div>
-                <h3 className="text-white font-medium">{post.author}</h3>
+                <h3 className="text-white font-medium">{post.author.username}</h3>
                 <p className="text-gray-400 text-sm flex items-center">
-                  {post.role} • {post.time}
+                  {post.author.role} • {new Date(post.created_at).toLocaleDateString()}
                 </p>
               </div>
             </div>
@@ -159,27 +109,27 @@ function Home() {
               <p className="text-gray-300">{post.content}</p>
             </div>
 
-            {/* Post Image or Video */}
-            {post.image && (
+            {/* Post Media */}
+            {post.media_url && post.media_type === 'image' && (
               <div className="mt-2">
                 <img
-                  src={post.image}
+                  src={post.media_url}
                   alt="Post content"
                   className="w-full h-64 object-cover"
                 />
               </div>
             )}
             
-            {post.video && (
+            {post.media_url && post.media_type === 'video' && (
               <div className="mt-2 relative video-container">
                 <video
-                  ref={post.id === 2 ? videoRef : null}
+                  ref={post.id === 'post-2' ? videoRef : null}
                   className="w-full h-64 object-cover"
                   loop
                   muted={isMuted}
                   playsInline
                 >
-                  <source src={post.video} type="video/mp4" />
+                  <source src={post.media_url} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
                 <div className="absolute bottom-4 right-4 flex space-x-2">
@@ -201,19 +151,33 @@ function Home() {
 
             {/* Post Actions */}
             <div className="px-4 py-3 border-t border-gray-800 flex items-center justify-between">
-              <button className="flex items-center space-x-2 text-gray-400 hover:text-neon transition-colors">
-                <ThumbsUp className="h-5 w-5" />
-                <span>{post.likes}</span>
+              <button 
+                onClick={() => handleLike(post.id)}
+                className={`flex items-center space-x-2 transition-colors ${
+                  likedPosts.has(post.id) ? 'text-neon' : 'text-gray-400 hover:text-neon'
+                }`}
+              >
+                <ThumbsUp className={`h-5 w-5 ${likedPosts.has(post.id) ? 'fill-current' : ''}`} />
+                <span>{post.likes_count + (likedPosts.has(post.id) ? 1 : 0)}</span>
               </button>
-              <button className="flex items-center space-x-2 text-gray-400 hover:text-neon transition-colors">
+              <button 
+                onClick={() => alert('Comments feature coming soon!')}
+                className="flex items-center space-x-2 text-gray-400 hover:text-neon transition-colors"
+              >
                 <MessageSquare className="h-5 w-5" />
-                <span>{post.comments}</span>
+                <span>{post.comments_count}</span>
               </button>
-              <button className="flex items-center space-x-2 text-gray-400 hover:text-neon transition-colors">
+              <button 
+                onClick={() => alert('Share feature coming soon!')}
+                className="flex items-center space-x-2 text-gray-400 hover:text-neon transition-colors"
+              >
                 <Share2 className="h-5 w-5" />
                 <span>Share</span>
               </button>
-              <button className="flex items-center space-x-2 text-gray-400 hover:text-neon transition-colors">
+              <button 
+                onClick={() => alert('Connect feature coming soon!')}
+                className="flex items-center space-x-2 text-gray-400 hover:text-neon transition-colors"
+              >
                 <Users className="h-5 w-5" />
                 <span>Connect</span>
               </button>

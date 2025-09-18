@@ -24,7 +24,7 @@ function PlayerProfile() {
   const [activeTab, setActiveTab] = useState<'posts' | 'stats'>('posts');
   const [showShareModal, setShowShareModal] = useState(false);
 
-  // Mock posts data - will be replaced with Supabase data
+  // Mock posts data
   const posts = [
     {
       id: 1,
@@ -70,19 +70,25 @@ function PlayerProfile() {
   ];
 
   const handleShare = () => {
-    // Will implement actual sharing functionality
     setShowShareModal(true);
   };
 
   const handleNewPost = () => {
-    // Will implement post creation with Supabase
-    console.log('New post');
+    alert('Post creation feature coming soon!');
+  };
+
+  const copyProfileLink = () => {
+    const profileUrl = `${window.location.origin}/profile/${user?.username}`;
+    navigator.clipboard.writeText(profileUrl).then(() => {
+      alert('Profile link copied to clipboard!');
+      setShowShareModal(false);
+    });
   };
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Profile Header */}
-      <div className="bg-gray-900 rounded-lg p-6 mb-6">
+      <div className="bg-gray-900 rounded-lg p-6 mb-6 border border-gray-800">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
             <img
@@ -92,11 +98,14 @@ function PlayerProfile() {
             />
             <div className="ml-6">
               <h1 className="text-2xl font-bold text-white">{user?.username}</h1>
-              <p className="text-gray-400">{user?.sport} Player</p>
+              <p className="text-gray-400">{user?.sport} {user?.user_type}</p>
               <div className="mt-2 flex items-center">
                 <Target className="h-5 w-5 text-neon mr-2" />
-                <span className="text-gray-300">All-Rounder</span>
+                <span className="text-gray-300">{user?.bio || 'All-Rounder'}</span>
               </div>
+              {user?.location && (
+                <p className="text-gray-400 text-sm mt-1">{user.location}</p>
+              )}
             </div>
           </div>
           <div className="flex space-x-2">
@@ -106,7 +115,10 @@ function PlayerProfile() {
             >
               <Share2 className="h-5 w-5" />
             </button>
-            <button className="p-2 text-gray-400 hover:text-neon transition-colors">
+            <button 
+              onClick={() => alert('Settings feature coming soon!')}
+              className="p-2 text-gray-400 hover:text-neon transition-colors"
+            >
               <Settings className="h-5 w-5" />
             </button>
           </div>
@@ -114,22 +126,22 @@ function PlayerProfile() {
 
         <div className="mt-6 grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-white">245</div>
+            <div className="text-2xl font-bold text-white">{user?.posts_count || 245}</div>
             <div className="text-sm text-gray-400">Posts</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-white">15.2K</div>
+            <div className="text-2xl font-bold text-white">{user?.followers_count || 15200}</div>
             <div className="text-sm text-gray-400">Followers</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-white">482</div>
+            <div className="text-2xl font-bold text-white">{user?.following_count || 482}</div>
             <div className="text-sm text-gray-400">Following</div>
           </div>
         </div>
 
         <div className="mt-6">
           <button 
-            onClick={() => {}} 
+            onClick={() => alert('Edit profile feature coming soon!')} 
             className="w-full bg-neon text-black rounded-md py-2 font-medium hover:bg-opacity-90 transition-colors"
           >
             Edit Profile
@@ -186,7 +198,10 @@ function PlayerProfile() {
                   />
                   <span className="ml-2 text-white">{user?.username}</span>
                 </div>
-                <button className="text-gray-400 hover:text-white">
+                <button 
+                  onClick={() => alert('Post options coming soon!')}
+                  className="text-gray-400 hover:text-white"
+                >
                   <MoreHorizontal className="h-5 w-5" />
                 </button>
               </div>
@@ -207,13 +222,22 @@ function PlayerProfile() {
 
               <div className="p-4">
                 <div className="flex items-center space-x-4 mb-4">
-                  <button className="text-gray-400 hover:text-neon transition-colors">
+                  <button 
+                    onClick={() => alert('Like feature coming soon!')}
+                    className="text-gray-400 hover:text-neon transition-colors"
+                  >
                     <Heart className="h-6 w-6" />
                   </button>
-                  <button className="text-gray-400 hover:text-neon transition-colors">
+                  <button 
+                    onClick={() => alert('Comments feature coming soon!')}
+                    className="text-gray-400 hover:text-neon transition-colors"
+                  >
                     <MessageSquare className="h-6 w-6" />
                   </button>
-                  <button className="text-gray-400 hover:text-neon transition-colors">
+                  <button 
+                    onClick={() => alert('Share feature coming soon!')}
+                    className="text-gray-400 hover:text-neon transition-colors"
+                  >
                     <Share2 className="h-6 w-6" />
                   </button>
                 </div>
@@ -251,7 +275,6 @@ function PlayerProfile() {
               <TrendingUp className="h-5 w-5 text-neon mr-2" />
               Performance Trend
             </h3>
-            {/* Chart will be implemented */}
             <div className="h-48 flex items-center justify-center text-gray-400">
               Performance chart coming soon
             </div>
@@ -262,10 +285,13 @@ function PlayerProfile() {
       {/* Share Profile Modal */}
       {showShareModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-900 rounded-lg p-6 max-w-sm w-full mx-4">
+          <div className="bg-gray-900 rounded-lg p-6 max-w-sm w-full mx-4 border border-gray-800">
             <h3 className="text-lg font-medium text-white mb-4">Share Profile</h3>
             <div className="space-y-4">
-              <button className="w-full flex items-center justify-between p-3 bg-gray-800 rounded-lg text-white hover:bg-gray-700">
+              <button 
+                onClick={copyProfileLink}
+                className="w-full flex items-center justify-between p-3 bg-gray-800 rounded-lg text-white hover:bg-gray-700 transition-colors"
+              >
                 <div className="flex items-center">
                   <LinkIcon className="h-5 w-5 text-neon mr-2" />
                   <span>Copy Profile Link</span>
@@ -275,7 +301,7 @@ function PlayerProfile() {
               <div className="flex justify-end space-x-2 mt-4">
                 <button
                   onClick={() => setShowShareModal(false)}
-                  className="px-4 py-2 text-gray-400 hover:text-white"
+                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
                 >
                   Close
                 </button>

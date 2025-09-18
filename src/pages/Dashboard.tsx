@@ -85,7 +85,7 @@ function Dashboard() {
         {stats.map((stat) => (
           <div
             key={stat.name}
-            className="bg-gray-800 overflow-hidden rounded-lg shadow"
+            className="bg-gray-800 overflow-hidden rounded-lg shadow border border-gray-700 hover:border-neon transition-colors"
           >
             <div className="p-5">
               <div className="flex items-center">
@@ -113,7 +113,7 @@ function Dashboard() {
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Recent Matches */}
-        <div className="bg-gray-800 rounded-lg shadow">
+        <div className="bg-gray-800 rounded-lg shadow border border-gray-700">
           <div className="p-6">
             <h3 className="text-lg font-medium text-white">Recent Matches</h3>
             <div className="mt-6 flow-root">
@@ -148,7 +148,7 @@ function Dashboard() {
         </div>
 
         {/* Upcoming Matches */}
-        <div className="bg-gray-800 rounded-lg shadow">
+        <div className="bg-gray-800 rounded-lg shadow border border-gray-700">
           <div className="p-6">
             <h3 className="text-lg font-medium text-white">Upcoming Matches</h3>
             <div className="mt-6 flow-root">

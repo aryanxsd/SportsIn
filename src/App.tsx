@@ -14,8 +14,6 @@ import Community from './pages/Community';
 import Chat from './pages/Chat';
 import Dashboard from './pages/Dashboard';
 import Matches from './pages/Matches';
-import { useEffect } from 'react';
-import { supabase } from './lib/supabase';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -36,54 +34,6 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
 function App() {
   const { user } = useAuth();
-
-  useEffect(() => {
-    // Handle email verification redirect
-    const handleAuthCallback = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (data.session?.user && !user) {
-        // User just verified email, create profile if needed
-        const userId = data.session.user.id;
-        const metadata = data.session.user.user_metadata;
-        
-        if (metadata.username && metadata.sport && metadata.user_type) {
-          try {
-            // Check if profile already exists
-            const { data: existingProfile } = await supabase
-              .from('users')
-              .select('id')
-              .eq('id', userId)
-              .single();
-
-            if (!existingProfile) {
-              // Create user profile
-              await supabase.from('users').insert([
-                {
-                  id: userId,
-                  username: metadata.username,
-                  sport: metadata.sport,
-                  user_type: metadata.user_type,
-                  avatar_url: `https://ui-avatars.com/api/?name=${metadata.username}&background=39FF14&color=000000`,
-                },
-              ]);
-
-              // Create initial player stats
-              await supabase.from('player_stats').insert([
-                {
-                  user_id: userId,
-                },
-              ]);
-            }
-          } catch (error) {
-            console.error('Error creating user profile after verification:', error);
-          }
-        }
-      }
-    };
-
-    handleAuthCallback();
-  }, [user]);
 
   return (
     <Router>
